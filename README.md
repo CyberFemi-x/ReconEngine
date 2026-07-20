@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Recon Engine
 ## Local Lab Information
 
@@ -107,3 +108,7 @@ Next milestone:
 * Build the command-line interface (CLI).
 * Implement configuration loading.
 * Implement scope validation.
+=======
+# ReconEngine
+A modular Python reconnaissance engine with scope validation, evidence collection, and normalized reporting for authorized security assessments.
+>>>>>>> 8f49c85f1074a898f983aff0a7a505022bded17c
