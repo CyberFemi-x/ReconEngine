@@ -110,3 +110,18 @@ def write_raw_output(output_path, tool_name, text):
 
         if not text.endswith("\n"):
             f.write("\n")
+
+def parse_route(response):
+    route = ""
+    proof = ""
+
+    for item in response.strip().split(";"):
+        key, value = item.strip().split("=", 1)
+
+        if key == "route":
+            route = value
+
+        elif key == "proof":
+            proof = value
+
+    return route, proof            

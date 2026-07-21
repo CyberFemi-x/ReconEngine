@@ -3,7 +3,6 @@ from http.client import responses
 from pathlib import Path
 from datetime import datetime, UTC
 
-from recon_engine.http_adapter import discover_http
 from recon_engine.config import load_assignment
 from recon_engine.scope import load_scope, is_target_allowed
 from recon_engine.models import AssetRecord
@@ -15,11 +14,17 @@ from recon_engine.utils import (
     log_error,
     write_asset_record,
     write_raw_output,
+    parse_route,
 )
 from recon_engine.adapters import (
     connect_to_target,
     receive_banner,
     send_command,
+)
+from recon_engine.http_adapter import (
+    discover_http,
+    extract_disallowed_paths,
+    http_get,
 )
 
 
@@ -86,12 +91,20 @@ def main():
             print(f"Status : {response['status']}")
             print(f"Server : {response['headers'].get('Server')}")
             print(f"Body   : {response['body']}")
+            if response["path"] == "/robots.txt":
+                paths = extract_disallowed_paths(response["body"])
 
-        write_raw_output(
-            output_path,
-            "http_adapter",
-            response["body"]
-        )
+                for path in paths:
+                    print(f"\nFollowing discovered path: {path}")
+                    extra = http_get(host, port, path)
+                    print(f"Status : {extra['status']}")
+                    print(f"Body   : {extra['body']}")
+
+                    write_raw_output(
+                        output_path,
+                        "http_adapter",
+                        response["body"]
+                    )
 
         service = "http"
         notes = f"HTTP {response['status']}"
@@ -115,21 +128,32 @@ def main():
         print("\n=== Server Response ===")
         print(banner)
 
-        command = input("\nCommand> ").strip()
+        response = send_command(client, "ROUTE")
 
-        if command:
+        write_raw_output(
+            output_path,
+            "socket_adapter",
+            response
+        )
 
-            response = send_command(client, command)
+        print("\n=== ROUTE Response ===")
+        print(response)
+        route, proof = parse_route(response)
+        result = http_get(
+            host,
+            18090,
+            "/",
+            headers={},
+            host_header=route,
+        )
 
-            write_raw_output(
-                output_path,
-                "socket_adapter",
-                response
-            )
-
-            print("\nResponse:")
-            print(response)
-
+        print("\n=== Virtual Host Test ===")
+        print(result["status"])
+        print(result["body"])
+        
+        print(f"\nRoute : {route}")
+        print(f"Proof : {proof}")
+       
         client.close()
 
         service = "line-protocol"

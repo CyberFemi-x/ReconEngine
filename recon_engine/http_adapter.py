@@ -1,13 +1,16 @@
 import http.client
 
 
-def http_get(host: str, port: int, path: str = "/", headers=None):
+def http_get(host: str, port: int, path: str = "/", headers=None, host_header=None):
     """
-    Send a HTTP GET request and return the response.
+    Send an HTTP GET request and return the response.
     """
 
     if headers is None:
         headers = {}
+
+    if host_header:
+        headers["Host"] = host_header
 
     conn = http.client.HTTPConnection(host, port, timeout=5)
 
@@ -27,6 +30,7 @@ def http_get(host: str, port: int, path: str = "/", headers=None):
     conn.close()
 
     return result
+
 
 def discover_http(host: str, port: int):
     """
@@ -49,3 +53,22 @@ def discover_http(host: str, port: int):
             pass
 
     return results
+
+
+def extract_disallowed_paths(robots_body: str):
+    """
+    Extract paths listed under 'Disallow:' in robots.txt.
+    """
+
+    paths = []
+
+    for line in robots_body.splitlines():
+        line = line.strip()
+
+        if line.lower().startswith("disallow:"):
+            path = line.split(":", 1)[1].strip()
+
+            if path:
+                paths.append(path)
+
+    return paths
