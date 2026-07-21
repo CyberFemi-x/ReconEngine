@@ -1,6 +1,7 @@
 import argparse
 from zipfile import Path
 from recon_engine.config import load_assignment
+from recon_engine.scope import load_scope, is_target_allowed
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -44,6 +45,10 @@ def main():
     assignment_path = scope_path.with_name("assignment.json")
 
     assignment = load_assignment(str(assignment_path))
+    scope = load_scope(args.scope)
+    if not is_target_allowed(args.target, scope):
+        print(f"[ERROR] Target {args.target} is outside the authorized scope.")
+        return
     
     print("=== Recon Engine ===")
     print(f"Target : {args.target}")
