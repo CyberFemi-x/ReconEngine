@@ -65,3 +65,19 @@ def log_error(output_path, message):
     with error_file.open("a", encoding="utf-8") as file:
         file.write(json.dumps(error))
         file.write("\n")
+
+def update_run_file(output_path, status):
+    """
+    Update run.json when the engine finishes.
+    """
+
+    run_file = output_path / "run.json"
+
+    with run_file.open("r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    data["ended_at"] = datetime.now(UTC).isoformat()
+    data["exit_status"] = status
+
+    with run_file.open("w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4)

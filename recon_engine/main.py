@@ -7,6 +7,7 @@ from recon_engine.utils import (
     parse_target,
     create_output_structure,
     write_run_file,
+    update_run_file,
     log_error)
 
 def parse_arguments():
@@ -59,6 +60,7 @@ def main():
         message = f"Target {args.target} is outside the authorized scope."
         print(f"[ERROR] {message}")
         log_error(output_path, message)
+        update_run_file(output_path, "FAILED")
         return
 
     print("=== Recon Engine ===")
@@ -81,6 +83,7 @@ def main():
     print("[SUCCESS] Connected to target.")
 
     client.close()
+    update_run_file(output_path, "SUCCESS")
 
 
 if __name__ == "__main__":
