@@ -1,3 +1,7 @@
+from pathlib import Path
+import json
+from datetime import datetime, UTC
+
 def parse_target(target: str):
     """
     Split a target string into host and port.
@@ -11,7 +15,6 @@ def parse_target(target: str):
     return host, int(port)
 
 
-from pathlib import Path
 
 def create_output_structure(output_dir: str):
     """
@@ -24,9 +27,6 @@ def create_output_structure(output_dir: str):
     (output / "normalized").mkdir(parents=True, exist_ok=True)
 
     return output
-
-import json
-from datetime import datetime, UTC
 
 
 def write_run_file(output_path, args):
@@ -50,3 +50,18 @@ def write_run_file(output_path, args):
 
     with run_file.open("w", encoding="utf-8") as file:
         json.dump(run_data, file, indent=4)
+
+
+def log_error(output_path, message):
+    """ Append an error to errors.jsonl. """
+
+    error = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "message": message,
+    }
+
+    error_file = output_path / "errors.jsonl"
+
+    with error_file.open("a", encoding="utf-8") as file:
+        file.write(json.dumps(error))
+        file.write("\n")

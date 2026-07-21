@@ -6,7 +6,8 @@ from recon_engine.scope import load_scope, is_target_allowed
 from recon_engine.utils import (
     parse_target,
     create_output_structure,
-    write_run_file,)
+    write_run_file,
+    log_error)
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -47,16 +48,19 @@ def main():
     args = parse_arguments()
     output_path = create_output_structure(args.output)
     write_run_file(output_path, args)
-    
+
     scope_path = Path(args.scope)
     assignment_path = scope_path.with_name("assignment.json")
 
     assignment = load_assignment(str(assignment_path))
     scope = load_scope(args.scope)
+    
     if not is_target_allowed(args.target, scope):
-        print(f"[ERROR] Target {args.target} is outside the authorized scope.")
+        message = f"Target {args.target} is outside the authorized scope."
+        print(f"[ERROR] {message}")
+        log_error(output_path, message)
         return
-        
+
     print("=== Recon Engine ===")
     print(f"Target : {args.target}")
     print(f"Scope  : {args.scope}")
