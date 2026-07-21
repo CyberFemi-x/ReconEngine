@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "started_at": "2026-07-21T12:45:47.221311+00:00",
+    "arguments": {
+        "target": "127.0.0.1:277",
+        "scope": "..\\ethical-hacking-stage-5-shared-b1\\evidence\\lab-runtime\\scope.csv",
+        "output": "run",
+        "rate": 25
+    },
+    "exit_status": "RUNNING"
+}
