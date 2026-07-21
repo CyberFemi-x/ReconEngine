@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
-from recon_engine.adapters import connect_to_target
+from datetime import datetime, UTC
+from urllib import response
 from recon_engine.config import load_assignment
 from recon_engine.scope import load_scope, is_target_allowed
 from recon_engine.models import AssetRecord
@@ -11,7 +12,11 @@ from recon_engine.utils import (
     update_run_file,
     log_error,
     write_asset_record)
-from datetime import datetime, UTC
+from recon_engine.adapters import (
+    connect_to_target,
+    receive_banner,
+    send_command,
+)
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -85,8 +90,16 @@ def main():
     client = connect_to_target(host, port)
     print("[SUCCESS] Connected to target.")
 
-    client.close()
-    update_run_file(output_path, "SUCCESS")
+    banner = receive_banner(client)
+    if banner:
+        print("\n=== Server Response ===")
+        print(banner)
+    else:
+        print("\nNo data received from target.")
+    
+    response = send_command(client, "HELP")
+    print("\n=== HELP Response ===")
+    print(response)
   
     record = AssetRecord(
         observed_at=datetime.now(UTC).isoformat(),
@@ -101,6 +114,11 @@ def main():
     )
 
     write_asset_record(output_path, record)
+
+
+
+    client.close()
+    update_run_file(output_path, "SUCCESS")
 
 
 if __name__ == "__main__":
