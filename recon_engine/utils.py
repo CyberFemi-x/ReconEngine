@@ -93,3 +93,20 @@ def write_asset_record(output_path, record):
     with asset_file.open("a", encoding="utf-8") as file:
         file.write(json.dumps(asdict(record)))
         file.write("\n")
+
+
+def write_raw_output(output_path, tool_name, text):
+    """
+    Save raw tool output without modification.
+    """
+
+    raw_dir = Path(output_path) / "raw" / tool_name
+    raw_dir.mkdir(parents=True, exist_ok=True)
+
+    raw_file = raw_dir / "session.txt"
+
+    with open(raw_file, "a", encoding="utf-8") as f:
+        f.write(text)
+
+        if not text.endswith("\n"):
+            f.write("\n")

@@ -1,7 +1,8 @@
 import argparse
 from pathlib import Path
 from datetime import datetime, UTC
-from urllib import response
+
+from recon_engine.http_adapter import http_get
 from recon_engine.config import load_assignment
 from recon_engine.scope import load_scope, is_target_allowed
 from recon_engine.models import AssetRecord
@@ -11,50 +12,33 @@ from recon_engine.utils import (
     write_run_file,
     update_run_file,
     log_error,
-    write_asset_record)
+    write_asset_record,
+    write_raw_output,
+)
 from recon_engine.adapters import (
     connect_to_target,
     receive_banner,
     send_command,
 )
 
-def parse_arguments():
-    """Parse command-line arguments."""
 
+def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Recon Engine - Scope-safe reconnaissance tool"
     )
 
-    parser.add_argument(
-        "--target",
-        required=True,
-        help="Target host or IP address"
-    )
-
-    parser.add_argument(
-        "--scope",
-        required=True,
-        help="Path to scope.csv"
-    )
-
-    parser.add_argument(
-        "--output",
-        required=True,
-        help="Output directory"
-    )
-
-    parser.add_argument(
-        "--rate",
-        required=True,
-        type=int,
-        help="Maximum requests per second"
-    )
+    parser.add_argument("--target", required=True)
+    parser.add_argument("--scope", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--rate", required=True, type=int)
 
     return parser.parse_args()
 
 
 def main():
+
     args = parse_arguments()
+
     output_path = create_output_structure(args.output)
     write_run_file(output_path, args)
 
@@ -63,7 +47,7 @@ def main():
 
     assignment = load_assignment(str(assignment_path))
     scope = load_scope(args.scope)
-    
+
     if not is_target_allowed(args.target, scope):
         message = f"Target {args.target} is outside the authorized scope."
         print(f"[ERROR] {message}")
@@ -84,40 +68,83 @@ def main():
     print(f"Maximum Rate     : {assignment['maximum_rate_per_second']}")
     print(f"Authorized Ports : {assignment['authorized_ports']}")
 
-    
     host, port = parse_target(args.target)
-    print("\nConnecting to target...")
-    client = connect_to_target(host, port)
-    print("[SUCCESS] Connected to target.")
 
-    banner = receive_banner(client)
-    if banner:
+    service = "unknown"
+    notes = ""
+
+    if port == 18090:
+
+        print("\nPerforming HTTP discovery...")
+
+        response = http_get(host, port, "/")
+
+        print(f"Status : {response['status']}")
+        print(f"Server : {response['headers'].get('Server')}")
+        print(f"Body   : {response['body']}")
+
+        write_raw_output(
+            output_path,
+            "http_adapter",
+            response["body"]
+        )
+
+        service = "http"
+        notes = f"HTTP {response['status']}"
+
+    else:
+
+        print("\nConnecting to target...")
+
+        client = connect_to_target(host, port)
+
+        print("[SUCCESS] Connected to target.")
+
+        banner = receive_banner(client)
+
+        write_raw_output(
+            output_path,
+            "socket_adapter",
+            banner
+        )
+
         print("\n=== Server Response ===")
         print(banner)
-    else:
-        print("\nNo data received from target.")
-    
-    response = send_command(client, "HELP")
-    print("\n=== HELP Response ===")
-    print(response)
-  
+
+        command = input("\nCommand> ").strip()
+
+        if command:
+
+            response = send_command(client, command)
+
+            write_raw_output(
+                output_path,
+                "socket_adapter",
+                response
+            )
+
+            print("\nResponse:")
+            print(response)
+
+        client.close()
+
+        service = "line-protocol"
+        notes = "TCP connection established"
+
     record = AssetRecord(
         observed_at=datetime.now(UTC).isoformat(),
         target=host,
         port=port,
         protocol="tcp",
-        service="unknown",
-        source_tool="socket_adapter",
+        service=service,
+        source_tool="recon_engine",
         source_file="N/A",
         confidence=1.0,
-        notes="TCP connection established"
+        notes=notes,
     )
 
     write_asset_record(output_path, record)
 
-
-
-    client.close()
     update_run_file(output_path, "SUCCESS")
 
 

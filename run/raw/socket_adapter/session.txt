@@ -1,0 +1,15 @@
+RLY/2 READY profile=dynamic
+ERR unsupported command
+
+RLY/2 READY profile=dynamic
+ERR unsupported command
+
+RLY/2 READY profile=dynamic
+
+RLY/2 READY profile=dynamic
+ERR unsupported command
+RLY/2 READY profile=dynamic
+RLY/2 READY profile=dynamic
+
+
+
