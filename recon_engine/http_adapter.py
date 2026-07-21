@@ -27,3 +27,25 @@ def http_get(host: str, port: int, path: str = "/", headers=None):
     conn.close()
 
     return result
+
+def discover_http(host: str, port: int):
+    """
+    Perform basic HTTP discovery.
+    """
+
+    paths = [
+        "/",
+        "/robots.txt",
+    ]
+
+    results = []
+
+    for path in paths:
+        try:
+            result = http_get(host, port, path)
+            result["path"] = path
+            results.append(result)
+        except Exception:
+            pass
+
+    return results

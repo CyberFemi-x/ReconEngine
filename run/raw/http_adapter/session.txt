@@ -1,1 +1,4 @@
 Transit edge online. Route is not provisioned.
+Transit edge online. Route is not provisioned.
+User-agent: *
+Disallow: /route-health

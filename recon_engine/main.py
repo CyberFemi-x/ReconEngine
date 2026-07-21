@@ -1,8 +1,9 @@
 import argparse
+from http.client import responses
 from pathlib import Path
 from datetime import datetime, UTC
 
-from recon_engine.http_adapter import http_get
+from recon_engine.http_adapter import discover_http
 from recon_engine.config import load_assignment
 from recon_engine.scope import load_scope, is_target_allowed
 from recon_engine.models import AssetRecord
@@ -77,11 +78,14 @@ def main():
 
         print("\nPerforming HTTP discovery...")
 
-        response = http_get(host, port, "/")
+        responses = discover_http(host, port)
 
-        print(f"Status : {response['status']}")
-        print(f"Server : {response['headers'].get('Server')}")
-        print(f"Body   : {response['body']}")
+        for response in responses:
+            print("\n-----------------------")
+            print(f"Path   : {response['path']}")
+            print(f"Status : {response['status']}")
+            print(f"Server : {response['headers'].get('Server')}")
+            print(f"Body   : {response['body']}")
 
         write_raw_output(
             output_path,
