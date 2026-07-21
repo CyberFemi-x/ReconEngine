@@ -3,12 +3,15 @@ from pathlib import Path
 from recon_engine.adapters import connect_to_target
 from recon_engine.config import load_assignment
 from recon_engine.scope import load_scope, is_target_allowed
+from recon_engine.models import AssetRecord
 from recon_engine.utils import (
     parse_target,
     create_output_structure,
     write_run_file,
     update_run_file,
-    log_error)
+    log_error,
+    write_asset_record)
+from datetime import datetime, UTC
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -84,6 +87,20 @@ def main():
 
     client.close()
     update_run_file(output_path, "SUCCESS")
+  
+    record = AssetRecord(
+        observed_at=datetime.now(UTC).isoformat(),
+        target=host,
+        port=port,
+        protocol="tcp",
+        service="unknown",
+        source_tool="socket_adapter",
+        source_file="N/A",
+        confidence=1.0,
+        notes="TCP connection established"
+    )
+
+    write_asset_record(output_path, record)
 
 
 if __name__ == "__main__":
