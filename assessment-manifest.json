@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "project_id": "EH-A1",
+  "variant": "V1",
+  "candidate_binding": "UBI-EH-A1-4EDC66F95C6EE7BFA9CE25F2",
+
+  "assigned_pack": {
+    "file_name": "ethical-hacking-stage-5-shared-b1.tar",
+    "sha256": "984B531BEC2214F217975DBBE9BAB1AFC14A3EAC021DF5E24F61D99622B6259E",
+    "manifest_signature": "",
+    "verified_before_use": true
+  },
+
+  "commit": "1b235baeefa6b0c4d0d239c6fc2374f06f335040",
+
+  "supported_environment": {
+    "os": "Windows 11",
+    "cpu": "x64",
+    "memory_gb": 8,
+    "tool_versions": {
+      "python": "3.11",
+      "xmlrunner": "installed"
+    }
+  },
+
+  "commands": {
+    "provision": "",
+    "build": "",
+    "test": "py -m unittest discover -s tests -v",
+    "clean": ""
+  },
+
+  "results": {
+    "public_tests": {
+      "passed": 9,
+      "failed": 0,
+      "report": "test-results.xml"
+    },
+
+    "runtime_seconds": 0,
+    "peak_memory_mb": 0,
+
+    "output_hashes": {},
+
+    "inputs": [
+      "scope.csv",
+      "assignment.json"
+    ],
+
+    "outputs": [
+      "normalized.json",
+      "foothold-evidence.txt",
+      "request-ledger.csv"
+    ],
+
+    "manual_preconditions": [
+      "Local loopback target started before execution."
+    ],
+
+    "known_limitations": [
+      "Engine supports the assignment scope and protocols implemented for Stage 5."
+    ]
+  }
+}

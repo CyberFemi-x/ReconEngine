@@ -1,0 +1,5 @@
+asset    , port , scope                                   , notes
+127.0.0.1, 18090, IN                                      , HTTP discovery service
+127.0.0.1, 22537, IN                                      , Signal protocol service
+127.0.0.1, 26000, OUT                                     , Decoy endpoint
+0.0.0.0/0, OUT  , All non-loopback destinations prohibited
