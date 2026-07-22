@@ -3,6 +3,6 @@ I attest that I performed the submitted work on the assigned authorized artifact
 material assistance below and can reproduce the work during artifact check. I did not alter raw evidence,
 fabricate tool output, rewrite commit history, share restricted artifacts, or cross scope.
 
-Assistance and tools used: Google, ChatGPT
+Assistance and tools used: VSCode(Code Editor), Powershell Terminal, Google, ChatGPT
 
 Signed name: Akinkoye Oluwafemi Dare    UTC date/time: 17:09:25
