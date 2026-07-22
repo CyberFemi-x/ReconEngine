@@ -16,3 +16,5 @@ User-agent: *
 Disallow: /route-health
 User-agent: *
 Disallow: /route-health
+User-agent: *
+Disallow: /route-health

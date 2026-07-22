@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 import json
 from datetime import datetime, UTC
@@ -125,3 +126,45 @@ def parse_route(response):
             proof = value
 
     return route, proof            
+
+
+def write_request_ledger(
+    output_path: Path,
+    target: str,
+    port: int,
+    protocol: str,
+    request: str,
+    result: str,
+    scope: str = "IN",
+):
+    """
+    Append one request to request-ledger.csv.
+    """
+
+    ledger = output_path.parent / "request-ledger.csv"
+
+    file_exists = ledger.exists()
+
+    with open(ledger, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+
+        if not file_exists:
+            writer.writerow([
+                "timestamp",
+                "target",
+                "port",
+                "protocol",
+                "request",
+                "result",
+                "scope",
+            ])
+
+        writer.writerow([
+            datetime.now(UTC).isoformat(),
+            target,
+            port,
+            protocol,
+            request,
+            result,
+            scope,
+        ])

@@ -17,6 +17,7 @@ from recon_engine.utils import (
     write_asset_record,
     write_raw_output,
     parse_route,
+    write_request_ledger,
 )
 from recon_engine.adapters import (
     connect_to_target,
@@ -131,7 +132,14 @@ def main():
         print(banner)
 
         response = send_command(client, "ROUTE")
-
+        write_request_ledger(
+            output_path,
+            host,
+            port,
+            "TCP",
+            "ROUTE",
+            "200",
+        )
         write_raw_output(
             output_path,
             "socket_adapter",
@@ -148,6 +156,14 @@ def main():
             headers={},
             host_header=route,
         )
+        write_request_ledger(
+            output_path,
+            host,
+            18090,
+            "HTTP",
+            "GET /",
+            str(result["status"]),
+        )
 
         print("\n=== Virtual Host Test ===")
         print(result["status"])
@@ -162,6 +178,15 @@ def main():
                 "/ops-diagnostics",
                 host_header=route,
             )
+
+        write_request_ledger(
+            output_path,
+            host,
+            18090,
+            "HTTP",
+            "GET /ops-diagnostics",
+            str(diag["status"]),
+        )
 
         print("\n=== Diagnostics ===")
         print(diag["status"])
@@ -186,6 +211,14 @@ def main():
                     },
                 host_header=route,
                 )
+        write_request_ledger(
+            output_path,
+            host,
+            18090,
+            "HTTP",
+            "GET /user.txt",
+            str(flag["status"]),
+        )
 
         print("\n=== Flag ===")
         print(flag["status"])
