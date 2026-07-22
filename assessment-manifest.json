@@ -7,7 +7,7 @@
   "assigned_pack": {
     "file_name": "ethical-hacking-stage-5-shared-b1.tar",
     "sha256": "984B531BEC2214F217975DBBE9BAB1AFC14A3EAC021DF5E24F61D99622B6259E",
-    "manifest_signature": "",
+    "manifest_signature": " 6137fee074fa8d86a46154add763bd3f4adf9205ff479c30dd3e549f2ab77e6a",
     "verified_before_use": true
   },
 
@@ -33,7 +33,7 @@
   "results": {
     "public_tests": {
       "passed": 9,
-      "failed": 0,
+      "failed": 1,
       "report": "test-results.xml"
     },
 

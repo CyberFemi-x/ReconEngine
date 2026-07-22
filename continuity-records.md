@@ -4,7 +4,6 @@ Project
 Stage 5 – Build a Recon Engine and Earn the Foothold
 
 Candidate
-
 P4
 
 Previous Stage Component
